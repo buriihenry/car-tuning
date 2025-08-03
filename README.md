@@ -1,6 +1,6 @@
 # Car Tuning AI Agent
 
-A comprehensive AI agent that provides personalized car tuning suggestions based on user input, considering performance goals, budget, experience level, and safety requirements.
+A vibe-coded comprehensive AI agent that provides personalized car tuning suggestions based on user input, considering performance goals, budget, experience level, and safety requirements.
 
 ## 🚗 Features
 
