@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Tuning AI Agent</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-car text-5xl mr-4"></i>
+                    Car Tuning AI Agent
+                </h1>
+                <p class="text-xl opacity-90">Get personalized car modification recommendations based on your vehicle, goals, budget, and experience level.</p>
+                
+                <!-- LLM Status -->
+                <div class="mt-4 flex justify-center items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-robot text-2xl"></i>
+                        <span class="text-lg font-semibold">AI Enhancement</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="llmToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="llmStatus" class="text-sm opacity-75">
+                        <span class="bg-green-500 text-white px-2 py-1 rounded">Enabled</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Form Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Input Form -->
+            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-cog mr-2"></i>
+                    Vehicle Information
+                </h2>
+                
+                <form id="tuningForm" class="space-y-6">
+                    <!-- Car Information -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-700">Car Details</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Car Make</label>
+                                <input type="text" id="carMake" name="carMake" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="e.g., Toyota, BMW, Tesla">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Car Model</label>
+                                <input type="text" id="carModel" name="carModel" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="e.g., Camry, 3 Series, Model 3">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                                <input type="number" id="carYear" name="carYear" min="1900" max="2030"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="2020">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Engine Type</label>
+                                <select id="engineType" name="engineType" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="petrol">Petrol</option>
+                                    <option value="diesel">Diesel</option>
+                                    <option value="hybrid">Hybrid</option>
+                                    <option value="electric">Electric</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Current Modifications (Optional)</label>
+                            <textarea id="currentMods" name="currentMods" rows="3"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      placeholder="List any current modifications, one per line"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- User Preferences -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-700">Your Goals & Preferences</h3>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Primary Goals</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="goals" value="performance" class="mr-2">
+                                    <span class="text-sm">Performance</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="goals" value="fuel_economy" class="mr-2">
+                                    <span class="text-sm">Fuel Economy</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="goals" value="daily_comfort" class="mr-2">
+                                    <span class="text-sm">Daily Comfort</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="goals" value="track_use" class="mr-2">
+                                    <span class="text-sm">Track Use</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="goals" value="off_roading" class="mr-2">
+                                    <span class="text-sm">Off-Roading</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Budget Range</label>
+                                <select id="budgetRange" name="budgetRange" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="budget">Budget ($500-2000)</option>
+                                    <option value="moderate" selected>Moderate ($2000-8000)</option>
+                                    <option value="premium">Premium ($8000-20000)</option>
+                                    <option value="unlimited">Unlimited ($20000+)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
+                                <select id="experienceLevel" name="experienceLevel" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate" selected>Intermediate</option>
+                                    <option value="advanced">Advanced</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Maximum Budget (Optional)</label>
+                            <input type="number" id="maxBudget" name="maxBudget" min="0" step="100"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="e.g., 5000">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button type="submit" id="generateBtn" 
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition duration-200">
+                            <i class="fas fa-magic mr-2"></i>
+                            Generate Recommendations
+                        </button>
+                        <button type="button" id="sampleBtn" 
+                                class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-md transition duration-200">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            Load Sample
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6 card-hover">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-chart-line mr-2"></i>
+                    Recommendations
+                </h2>
+                
+                <div id="results" class="space-y-6">
+                    <div class="text-center text-gray-500 py-12">
+                        <i class="fas fa-car text-6xl mb-4 opacity-50"></i>
+                        <p class="text-lg">Fill out the form and click "Generate Recommendations" to get started.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Results (Hidden by default) -->
+        <div id="detailedResults" class="mt-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Detailed Analysis</h3>
+                <div id="detailedContent"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-300">
+                <i class="fas fa-shield-alt mr-2"></i>
+                Always consult with qualified automotive professionals before making modifications.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentReport = null;
+        let llmEnabled = true;
+
+        // DOM elements
+        const form = document.getElementById('tuningForm');
+        const results = document.getElementById('results');
+        const detailedResults = document.getElementById('detailedResults');
+        const detailedContent = document.getElementById('detailedContent');
+        const generateBtn = document.getElementById('generateBtn');
+        const sampleBtn = document.getElementById('sampleBtn');
+        const llmToggle = document.getElementById('llmToggle');
+        const llmStatus = document.getElementById('llmStatus');
+
+        // Event listeners
+        form.addEventListener('submit', handleFormSubmit);
+        sampleBtn.addEventListener('click', loadSampleData);
+        llmToggle.addEventListener('change', handleLLMToggle);
+
+        // Handle LLM toggle
+        function handleLLMToggle() {
+            llmEnabled = llmToggle.checked;
+            if (llmEnabled) {
+                llmStatus.innerHTML = '<span class="bg-green-500 text-white px-2 py-1 rounded">Enabled</span>';
+            } else {
+                llmStatus.innerHTML = '<span class="bg-gray-500 text-white px-2 py-1 rounded">Disabled</span>';
+            }
+        }
+
+        // Handle form submission
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            generateBtn.innerHTML = '<div class="loading"></div> Generating...';
+            generateBtn.disabled = true;
+            
+            try {
+                // Collect form data
+                const formData = collectFormData();
+                
+                // Validate data
+                const validation = await validateData(formData);
+                if (!validation.valid) {
+                    showError('Please fix the following errors: ' + validation.errors.join(', '));
+                    return;
+                }
+                
+                // Generate recommendations
+                const response = await fetch('/api/recommendations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentReport = result.data;
+                    displayResults(result.data);
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('An error occurred while generating recommendations.');
+                console.error('Error:', error);
+            } finally {
+                // Reset button
+                generateBtn.innerHTML = '<i class="fas fa-magic mr-2"></i> Generate Recommendations';
+                generateBtn.disabled = false;
+            }
+        }
+
+        // Collect form data
+        function collectFormData() {
+            const goals = Array.from(document.querySelectorAll('input[name="goals"]:checked'))
+                              .map(cb => cb.value);
+            
+            const currentMods = document.getElementById('currentMods').value
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            
+            return {
+                car_info: {
+                    make: document.getElementById('carMake').value,
+                    model: document.getElementById('carModel').value,
+                    year: parseInt(document.getElementById('carYear').value),
+                    engine_type: document.getElementById('engineType').value,
+                    current_modifications: currentMods
+                },
+                user_preferences: {
+                    primary_goals: goals,
+                    budget_range: document.getElementById('budgetRange').value,
+                    experience_level: document.getElementById('experienceLevel').value,
+                    max_budget: document.getElementById('maxBudget').value ? 
+                               parseFloat(document.getElementById('maxBudget').value) : null
+                }
+            };
+        }
+
+        // Validate data
+        async function validateData(data) {
+            try {
+                const response = await fetch('/api/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                return result.success ? result.data : { valid: false, errors: [result.error] };
+            } catch (error) {
+                return { valid: false, errors: ['Validation failed'] };
+            }
+        }
+
+        // Load sample data
+        async function loadSampleData() {
+            try {
+                const response = await fetch('/api/sample');
+                const result = await response.json();
+                
+                if (result.success) {
+                    populateForm(result.data);
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('Failed to load sample data.');
+            }
+        }
+
+        // Populate form with data
+        function populateForm(data) {
+            // Car info
+            document.getElementById('carMake').value = data.car_info.make;
+            document.getElementById('carModel').value = data.car_info.model;
+            document.getElementById('carYear').value = data.car_info.year;
+            document.getElementById('engineType').value = data.car_info.engine_type;
+            document.getElementById('currentMods').value = data.car_info.current_modifications.join('\n');
+            
+            // User preferences
+            document.getElementById('budgetRange').value = data.user_preferences.budget_range;
+            document.getElementById('experienceLevel').value = data.user_preferences.experience_level;
+            document.getElementById('maxBudget').value = data.user_preferences.max_budget || '';
+            
+            // Goals
+            document.querySelectorAll('input[name="goals"]').forEach(cb => {
+                cb.checked = data.user_preferences.primary_goals.includes(cb.value);
+            });
+        }
+
+        // Display results
+        function displayResults(report) {
+            const carInfo = report.car_info;
+            const userPrefs = report.user_preferences;
+            const recommendations = report.recommendations;
+            
+            let html = `
+                <div class="fade-in">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-info-circle text-blue-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-blue-800">
+                                    ${carInfo.year} ${carInfo.make} ${carInfo.model} - ${carInfo.engine_type}
+                                </h3>
+                                <div class="mt-2 text-sm text-blue-700">
+                                    <p><strong>Goals:</strong> ${userPrefs.primary_goals.map(g => g.replace('_', ' ')).join(', ')}</p>
+                                    <p><strong>Budget:</strong> $${report.total_estimated_cost.min.toLocaleString()} - $${report.total_estimated_cost.max.toLocaleString()}</p>
+                                    <p><strong>Experience:</strong> ${userPrefs.experience_level}</p>
+                                    ${llmEnabled ? '<p><strong>AI Enhancement:</strong> <span class="text-green-600">✓ Enabled</span></p>' : '<p><strong>AI Enhancement:</strong> <span class="text-gray-600">✗ Disabled</span></p>'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-star mr-2 text-yellow-500"></i>
+                        Top Recommendations (${recommendations.length})
+                    </h3>
+            `;
+            
+            recommendations.forEach((rec, index) => {
+                const safetyColor = rec.safety_level === 'high' ? 'red' : 
+                                  rec.safety_level === 'medium' ? 'yellow' : 'green';
+                
+                html += `
+                    <div class="border border-gray-200 rounded-lg p-4 mb-4 hover:shadow-md transition duration-200">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="text-lg font-semibold text-gray-800">${index + 1}. ${rec.name}</h4>
+                            <span class="bg-${safetyColor}-100 text-${safetyColor}-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                ${rec.safety_level.toUpperCase()} RISK
+                            </span>
+                        </div>
+                        
+                        <p class="text-gray-600 mb-3">${rec.description}</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <strong class="text-gray-700">Cost:</strong> 
+                                $${rec.cost_range.min.toLocaleString()} - $${rec.cost_range.max.toLocaleString()}
+                            </div>
+                            <div>
+                                <strong class="text-gray-700">Priority Score:</strong> 
+                                ${rec.priority_score}/10
+                            </div>
+                        </div>
+                        
+                        ${rec.benefits.length > 0 ? `
+                            <div class="mt-3">
+                                <strong class="text-green-700">Benefits:</strong>
+                                <ul class="list-disc list-inside text-sm text-gray-600 mt-1">
+                                    ${rec.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        ${rec.safety_warnings.length > 0 ? `
+                            <div class="mt-3">
+                                <strong class="text-red-700">Safety Warnings:</strong>
+                                <ul class="list-disc list-inside text-sm text-red-600 mt-1">
+                                    ${rec.safety_warnings.map(warning => `<li>${warning}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    <div class="mt-6">
+                        <button onclick="showDetailedResults()" 
+                                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                            <i class="fas fa-chart-bar mr-2"></i>
+                            View Detailed Analysis
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            results.innerHTML = html;
+        }
+
+        // Show detailed results
+        function showDetailedResults() {
+            if (!currentReport) return;
+            
+            const report = currentReport;
+            
+            let html = `
+                <div class="space-y-6">
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-yellow-800">Important Disclaimer</h3>
+                                <div class="mt-2 text-sm text-yellow-700">
+                                    <p>This report provides general recommendations and should not be considered as professional automotive advice. Always consult with qualified professionals before making modifications.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Safety Summary</h4>
+                            <div class="space-y-2">
+                                ${Object.entries(report.safety_summary).map(([level, warnings]) => 
+                                    warnings.length > 0 ? `
+                                        <div class="bg-${level === 'high_risk' ? 'red' : level === 'medium_risk' ? 'yellow' : 'green'}-50 p-3 rounded">
+                                            <strong class="text-${level === 'high_risk' ? 'red' : level === 'medium_risk' ? 'yellow' : 'green'}-800">${level.replace('_', ' ').toUpperCase()}:</strong>
+                                            <ul class="list-disc list-inside text-sm mt-1">
+                                                ${warnings.map(warning => `<li>${warning}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    ` : ''
+                                ).join('')}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Legal Considerations</h4>
+                            <div class="space-y-2">
+                                ${Object.entries(report.legal_summary).map(([category, items]) => 
+                                    items.length > 0 ? `
+                                        <div class="bg-blue-50 p-3 rounded">
+                                            <strong class="text-blue-800">${category.replace('_', ' ').toUpperCase()}:</strong>
+                                            <ul class="list-disc list-inside text-sm mt-1">
+                                                ${items.map(item => `<li>${item}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    ` : ''
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded">
+                        <h4 class="font-semibold text-gray-800 mb-2">Compatibility Matrix</h4>
+                        <div class="text-sm text-gray-600">
+                            ${Object.entries(report.compatibility_matrix).map(([category, compatible]) => 
+                                `<p><strong>${category}:</strong> ${compatible.join(', ')}</p>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            detailedContent.innerHTML = html;
+            detailedResults.classList.remove('hidden');
+            
+            // Scroll to detailed results
+            detailedResults.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show error message
+        function showError(message) {
+            results.innerHTML = `
+                <div class="bg-red-50 border-l-4 border-red-400 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">Error</h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                <p>${message}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html> 

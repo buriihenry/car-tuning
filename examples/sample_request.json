@@ -1,0 +1,18 @@
+{
+  "car_info": {
+    "make": "BMW",
+    "model": "3 Series",
+    "year": 2021,
+    "engine_type": "petrol",
+    "current_modifications": [
+      "Performance air filter",
+      "Lowering springs"
+    ]
+  },
+  "user_preferences": {
+    "primary_goals": ["performance", "track_use"],
+    "budget_range": "premium",
+    "experience_level": "advanced",
+    "max_budget": 15000.0
+  }
+} 

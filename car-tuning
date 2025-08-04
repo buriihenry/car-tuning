@@ -1,0 +1,142 @@
+{
+  "car_info": {
+    "make": "audi",
+    "model": "a4 allroad",
+    "year": 2012,
+    "engine_type": "petrol",
+    "current_modifications": []
+  },
+  "user_preferences": {
+    "primary_goals": [
+      "performance",
+      "daily_comfort",
+      "fuel_economy"
+    ],
+    "budget_range": "moderate",
+    "experience_level": "advanced",
+    "max_budget": null
+  },
+  "recommendations": [
+    {
+      "category": "ecu_remapping",
+      "name": "Stage 2 ECU Remap",
+      "description": "Advanced ECU tuning for modified engines with supporting hardware",
+      "benefits": [
+        "20-35% power increase",
+        "Enhanced torque delivery",
+        "Customizable power curves"
+      ],
+      "cost_range": {
+        "min": 500.0,
+        "max": 1200.0
+      },
+      "compatibility_notes": [
+        "Requires supporting modifications",
+        "Not suitable for stock engines"
+      ],
+      "prerequisites": [
+        "Stage 1 remap",
+        "Upgraded air intake",
+        "Performance exhaust"
+      ],
+      "safety_warnings": [
+        "High risk of engine damage if not properly tuned",
+        "Requires supporting hardware"
+      ],
+      "legal_considerations": [
+        "Likely illegal for road use",
+        "Track use only"
+      ],
+      "warranty_impact": "Will void warranty",
+      "emissions_impact": "Will fail emissions testing",
+      "insurance_impact": "Will affect insurance coverage",
+      "priority_score": 10.0,
+      "safety_level": "high",
+      "installation_difficulty": "Professional installation required",
+      "professional_required": true
+    },
+    {
+      "category": "brake_system",
+      "name": "Big Brake Kit",
+      "description": "Larger brake rotors and calipers for maximum stopping power",
+      "benefits": [
+        "Maximum stopping power",
+        "Better heat dissipation",
+        "Improved fade resistance"
+      ],
+      "cost_range": {
+        "min": 1500.0,
+        "max": 5000.0
+      },
+      "compatibility_notes": [
+        "Check wheel clearance",
+        "May require wheel upgrade"
+      ],
+      "prerequisites": [
+        "Compatible wheels",
+        "Sufficient wheel clearance"
+      ],
+      "safety_warnings": [
+        "Professional installation required",
+        "Proper bleeding critical"
+      ],
+      "legal_considerations": [
+        "Must meet safety standards",
+        "May require certification"
+      ],
+      "warranty_impact": "Will affect brake warranty",
+      "emissions_impact": "No impact",
+      "insurance_impact": "May affect insurance",
+      "priority_score": 10.0,
+      "safety_level": "high",
+      "installation_difficulty": "Professional installation required",
+      "professional_required": true
+    }
+  ],
+  "total_estimated_cost": {
+    "min": 2000.0,
+    "max": 6200.0,
+    "currency": "USD"
+  },
+  "compatibility_matrix": {
+    "Stage 2 ECU Remap": [
+      "air_intake",
+      "exhaust_system"
+    ],
+    "Big Brake Kit": [
+      "suspension",
+      "tires_wheels"
+    ]
+  },
+  "safety_summary": {
+    "high_risk": [
+      "Proper bleeding critical",
+      "Requires supporting hardware",
+      "High risk of engine damage if not properly tuned",
+      "Professional installation required"
+    ],
+    "medium_risk": [],
+    "low_risk": []
+  },
+  "legal_summary": {
+    "warranty_impacts": [
+      "Big Brake Kit: Will affect brake warranty",
+      "Stage 2 ECU Remap: Will void warranty"
+    ],
+    "emissions_impacts": [
+      "Stage 2 ECU Remap: Will fail emissions testing"
+    ],
+    "insurance_impacts": [
+      "Stage 2 ECU Remap: Will affect insurance coverage",
+      "Big Brake Kit: May affect insurance"
+    ],
+    "legal_considerations": [
+      "Must meet safety standards",
+      "May require certification",
+      "Likely illegal for road use",
+      "Track use only"
+    ]
+  },
+  "disclaimer": "IMPORTANT DISCLAIMER:\n\nThis report provides general recommendations for car modifications and should not be considered as professional automotive advice. \n\nSAFETY WARNINGS:\n- All modifications should be performed by qualified professionals\n- Modifications may affect vehicle safety and handling characteristics\n- Test all modifications in safe conditions before regular use\n- Some modifications may void vehicle warranty\n- Performance modifications may affect emissions compliance\n\nLEGAL CONSIDERATIONS:\n- Check local laws and regulations before making modifications\n- Some modifications may be illegal for road use\n- Notify your insurance company of any modifications\n- Ensure modifications meet local safety standards\n\nPROFESSIONAL CONSULTATION:\n- Always consult with qualified automotive professionals\n- Have modifications inspected by certified technicians\n- Keep original parts for potential reversion\n- Regular maintenance is critical for modified vehicles\n\nThe authors are not responsible for any damage, injury, or legal issues resulting from these modifications.",
+  "generated_at": "2025-08-04T13:01:11.828208"
+}

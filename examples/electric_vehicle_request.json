@@ -1,0 +1,15 @@
+{
+  "car_info": {
+    "make": "Tesla",
+    "model": "Model 3",
+    "year": 2022,
+    "engine_type": "electric",
+    "current_modifications": []
+  },
+  "user_preferences": {
+    "primary_goals": ["performance", "daily_comfort"],
+    "budget_range": "moderate",
+    "experience_level": "intermediate",
+    "max_budget": 6000.0
+  }
+} 

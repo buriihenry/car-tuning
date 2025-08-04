@@ -1,0 +1,10 @@
+# Car Tuning AI Agent Environment Variables
+# Copy this file to .env and fill in your actual values
+
+# Google API Key for Gemini 2.5 Flash
+# Get your API key from: https://makersuite.google.com/app/apikey
+GOOGLE_API_KEY=your_google_api_key_here
+
+# Optional: Flask configuration
+FLASK_ENV=development
+FLASK_DEBUG=true 
